@@ -67,7 +67,7 @@ function App() {
 
   const nextPhoto = () => {
     if (photos.length < 4) {
-      setTimer(10);
+      setTimer(5);
       setIsCounting(true);
       setStatus('counting');
     } else {
@@ -78,7 +78,7 @@ function App() {
   const retakeLast = () => {
     setPhotos(photos.slice(0, -1));
     setVideoClips(videoClips.slice(0, -1));
-    setTimer(10);
+    setTimer(5);
     setIsCounting(true);
     setStatus('counting');
   };
