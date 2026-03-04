@@ -4,14 +4,30 @@
   --white: #ffffff;
 }
 
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; 
+  justify-content: flex-start; /* Keeps the title at the top */
   background-color: var(--pastel-pink);
+  width: 100vw; /* Forces it to fill the screen width */
   min-height: 100vh;
-  font-family: 'Comic Sans MS', cursive, sans-serif; /* We'll upgrade this font later! */
-  transition: background-color 0.1s;
+  padding: 40px 0;
+  box-sizing: border-box;
 }
 
 .flash-effect {
@@ -77,17 +93,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: center;
+  width: 100%;
 }
 
 .live-strip {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   background: white;
-  padding: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  border-radius: 5px; /* Classic photo strip look */
+  padding: 20px;
+  padding-bottom: 60px; /* Space at the bottom for branding/QR */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect just for fun */
+.live-strip:hover {
+  transform: scale(1.02);
 }
 
 .strip-video {
@@ -115,6 +139,8 @@
 
 .main-stage {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   width: 100%;
 }
