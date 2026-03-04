@@ -43,10 +43,14 @@ body {
 
 .camera-box {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   border: 10px solid white;
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  background: white; /* Adds a nice backing */
 }
 
 .timer-overlay {
@@ -60,21 +64,23 @@ body {
   -webkit-text-stroke: 3px #ff85a2;
 }
 
-.start-btn, .retake-btn, .next-btn {
+.start-btn, .retake-btn, .next-btn, .keep-btn {
   background: var(--pastel-blue);
   border: none;
   padding: 15px 30px;
   border-radius: 50px;
   color: #555;
   font-size: 1.2rem;
+  font-family: inherit;
   cursor: pointer;
   margin: 20px;
   box-shadow: 0 4px #8fc8d9;
+  transition: all 0.2s ease;
 }
 
-.start-btn:active {
-  transform: translateY(4px);
-  box-shadow: none;
+.start-btn:active, .retake-btn:active, .next-btn:active, .keep-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px #8fc8d9;
 }
 
 .preview-strip {
@@ -173,10 +179,6 @@ body {
 }
 
 .keep-btn {
-  background: #98ff98; /* Pastel green */
-  border: none;
-  padding: 15px 30px;
-  border-radius: 50px;
-  font-size: 1.2rem;
-  cursor: pointer;
+  background: #98ff98; /* Keep the green, but match the shape/shadow */
+  box-shadow: 0 4px #76d676;
 }
