@@ -41,6 +41,14 @@ body {
   margin-top: 20px;
 }
 
+.camera-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers items horizontally */
+  justify-content: center;
+  width: 100%;
+}
+
 .camera-box {
   position: relative;
   display: flex;
@@ -67,15 +75,15 @@ body {
 .start-btn, .retake-btn, .next-btn, .keep-btn {
   background: var(--pastel-blue);
   border: none;
-  padding: 15px 30px;
+  padding: 15px 40px; /* Wider for better look */
   border-radius: 50px;
   color: #555;
   font-size: 1.2rem;
-  font-family: inherit;
+  font-weight: bold;
   cursor: pointer;
   margin: 20px;
   box-shadow: 0 4px #8fc8d9;
-  transition: all 0.2s ease;
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .start-btn:active, .retake-btn:active, .next-btn:active, .keep-btn:active {

@@ -90,9 +90,11 @@ function App() {
       <div className="main-stage">
         {/* SHOW WEBCAM during counting or idle */}
         {(status === 'idle' || status === 'counting') && (
-          <div className="camera-box">
-            <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="webcam-feed" />
-            {status === 'counting' && <div className="timer-overlay">{timer}</div>}
+          <div className="camera-container">
+            <div className="camera-box">
+              <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="webcam-feed" />
+              {status === 'counting' && <div className="timer-overlay">{timer}</div>}
+            </div>
             {status === 'idle' && (
               <button onClick={() => { setPhotos([]); setVideoClips([]); nextPhoto(); }} className="start-btn">
                 Start Session
@@ -105,8 +107,8 @@ function App() {
         {status === 'review' && (
           <div className="review-box">
             <div className="review-media">
+              {/* Just the photo now - cleaner and faster! */}
               <img src={photos[photos.length - 1]} className="preview-img" alt="Captured" />
-              <video src={videoClips[videoClips.length - 1]} autoPlay loop muted className="preview-vid" />
             </div>
             <div className="review-controls">
               <button onClick={retakeLast} className="retake-btn">Retake Shot {photos.length}</button>
