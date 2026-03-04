@@ -72,3 +72,85 @@
   border: 5px solid white;
   border-radius: 10px;
 }
+
+.final-result-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.live-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: white;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  border-radius: 5px; /* Classic photo strip look */
+}
+
+.strip-video {
+  width: 250px; /* Adjust size for your M3 Pro screen */
+  height: auto;
+  border-radius: 2px;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+}
+
+.dot.filled {
+  background: white;
+}
+
+.main-stage {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.review-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.review-media {
+  display: flex;
+  gap: 20px;
+}
+
+.preview-img, .preview-vid {
+  width: 350px;
+  border-radius: 10px;
+  border: 4px solid var(--pastel-pink);
+}
+
+.review-controls {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+.keep-btn {
+  background: #98ff98; /* Pastel green */
+  border: none;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}

@@ -1,76 +1,138 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import './App.css';
 
 function App() {
   const webcamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  
   const [timer, setTimer] = useState(10);
   const [isCounting, setIsCounting] = useState(false);
+  const [status, setStatus] = useState('idle'); // idle, counting, flash, review, result
+  
   const [photos, setPhotos] = useState([]);
-  const [status, setStatus] = useState('idle'); // idle, counting, flash, review
+  const [videoClips, setVideoClips] = useState([]);
+  const [recordedChunks, setRecordedChunks] = useState([]);
 
-  // The 10-second logic
+  // --- VIDEO LOGIC ---
+  const startRecording = useCallback(() => {
+    setRecordedChunks([]);
+    if (webcamRef.current?.video?.srcObject) {
+      const stream = webcamRef.current.video.srcObject;
+      mediaRecorderRef.current = new MediaRecorder(stream, { mimeType: "video/webm" });
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) setRecordedChunks((prev) => [...prev, e.data]);
+      };
+      mediaRecorderRef.current.start();
+    }
+  }, []);
+
+  const stopAndCapture = useCallback(() => {
+    if (mediaRecorderRef.current?.state !== "inactive") {
+      mediaRecorderRef.current.stop();
+    }
+    setStatus('flash');
+    const imageSrc = webcamRef.current.getScreenshot();
+    
+    setTimeout(() => {
+      // Temporarily store the shot for review
+      setPhotos((prev) => [...prev, imageSrc]);
+      setStatus('review'); // STOP HERE for user feedback
+      setIsCounting(false);
+    }, 200);
+  }, []);
+
+  // Process video chunks into a URL once recording stops
+  useEffect(() => {
+    if (recordedChunks.length > 0 && status === 'review') {
+      const blob = new Blob(recordedChunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      setVideoClips((prev) => [...prev, url]);
+    }
+  }, [recordedChunks, status]);
+
+  // --- TIMER LOGIC ---
   useEffect(() => {
     let interval;
     if (isCounting && timer > 0) {
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
+        if (timer === 4) startRecording(); 
       }, 1000);
-    } else if (timer === 0) {
-      capturePhoto();
+    } else if (timer === 0 && isCounting) {
+      stopAndCapture();
     }
     return () => clearInterval(interval);
-  }, [isCounting, timer]);
+  }, [isCounting, timer, startRecording, stopAndCapture]);
 
-  const startSession = () => {
+  const nextPhoto = () => {
+    if (photos.length < 4) {
+      setTimer(10);
+      setIsCounting(true);
+      setStatus('counting');
+    } else {
+      setStatus('result');
+    }
+  };
+
+  const retakeLast = () => {
+    setPhotos(photos.slice(0, -1));
+    setVideoClips(videoClips.slice(0, -1));
     setTimer(10);
     setIsCounting(true);
     setStatus('counting');
   };
 
-  const capturePhoto = () => {
-    setStatus('flash');
-    const imageSrc = webcamRef.current.getScreenshot();
-    
-    // Simulate flash timing
-    setTimeout(() => {
-      setPhotos([...photos, imageSrc]);
-      setIsCounting(false);
-      setStatus('review');
-    }, 200);
-  };
-
   return (
     <div className={`app-container ${status === 'flash' ? 'flash-effect' : ''}`}>
       <h1 className="title">Smile4Long</h1>
-      
-      <div className="camera-box">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/jpeg"
-          className="webcam-feed"
-        />
-        
-        {status === 'counting' && <div className="timer-overlay">{timer}</div>}
-      </div>
 
-      <div className="controls">
-        {status === 'idle' && (
-          <button onClick={startSession} className="start-btn">Start Session</button>
+      <div className="main-stage">
+        {/* SHOW WEBCAM during counting or idle */}
+        {(status === 'idle' || status === 'counting') && (
+          <div className="camera-box">
+            <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" className="webcam-feed" />
+            {status === 'counting' && <div className="timer-overlay">{timer}</div>}
+            {status === 'idle' && (
+              <button onClick={() => { setPhotos([]); setVideoClips([]); nextPhoto(); }} className="start-btn">
+                Start Session
+              </button>
+            )}
+          </div>
         )}
-        
+
+        {/* REVIEW SCREEN after each shot */}
         {status === 'review' && (
-          <div className="review-btns">
-            <button onClick={() => { setPhotos(photos.slice(0, -1)); startSession(); }} className="retake-btn">Retake</button>
-            <button onClick={() => setStatus('idle')} className="next-btn">Keep & Next</button>
+          <div className="review-box">
+            <div className="review-media">
+              <img src={photos[photos.length - 1]} className="preview-img" alt="Captured" />
+              <video src={videoClips[videoClips.length - 1]} autoPlay loop muted className="preview-vid" />
+            </div>
+            <div className="review-controls">
+              <button onClick={retakeLast} className="retake-btn">Retake Shot {photos.length}</button>
+              <button onClick={nextPhoto} className="keep-btn">
+                {photos.length === 4 ? "See Final Strip" : "Keep & Next"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* FINAL RESULT */}
+        {status === 'result' && (
+          <div className="final-result-view">
+            <div className="live-strip">
+              {videoClips.map((vid, i) => (
+                <video key={i} src={vid} autoPlay loop muted className="strip-video" />
+              ))}
+            </div>
+            <button onClick={() => setStatus('idle')} className="start-btn">Start New Session</button>
           </div>
         )}
       </div>
 
-      <div className="preview-strip">
-        {photos.map((img, i) => (
-          <img key={i} src={img} alt={`Capture ${i}`} className="mini-photo" />
+      <div className="progress-dots">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className={`dot ${i < photos.length ? 'filled' : ''}`} />
         ))}
       </div>
     </div>
